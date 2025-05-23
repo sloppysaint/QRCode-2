@@ -19,17 +19,43 @@ app.get('/view/:code', async (req, res) => {
   try {
     const entry = await Entry.findOne({ code });
     if (!entry) {
-      res.send('Invalid QR code.');
+      res.send(`
+        <html>
+          <body style="font-size:2rem;text-align:center;padding-top:40px;">
+            Invalid QR code.
+          </body>
+        </html>
+      `);
     } else if (entry.scanned) {
-      res.send('This QR code has already been used.');
+      res.send(`
+        <html>
+          <body style="font-size:2rem;text-align:center;padding-top:40px;">
+            This QR code has already been used.
+          </body>
+        </html>
+      `);
     } else {
       entry.scanned = true;
       await entry.save();
-      res.send(`<h2>Name: ${entry.name}</h2><h3>Phone: ${entry.phone}</h3>`);
+      res.send(`
+        <html>
+          <body style="font-size:2.2rem;line-height:1.5;text-align:center;padding-top:40px;">
+            <h2 style="font-size:2.5rem;margin-bottom:20px;">Name: ${entry.name}</h2>
+            <h3 style="font-size:2rem;margin-top:0;">Phone: ${entry.phone}</h3>
+          </body>
+        </html>
+      `);
     }
   } catch (err) {
-    res.status(500).send('Server error.');
+    res.status(500).send(`
+      <html>
+        <body style="font-size:2rem;text-align:center;padding-top:40px;">
+          Server error.
+        </body>
+      </html>
+    `);
   }
 });
+
 
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
