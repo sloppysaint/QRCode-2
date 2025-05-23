@@ -7,7 +7,15 @@ const QRCode = require('qrcode');
 const path = require('path');
 const Entry = require('./models/entry');
 
+// For QR code image links, use /qr/ not /view/
+const QR_IMG_BASE_URL = 'https://qrcode-2-6usy.onrender.com/qr/';
 const BASE_URL = process.env.BASE_URL || 'http://localhost:3000/view/';
+
+// Ensure qrcodes directory exists
+const qrcodesDir = path.join(__dirname, 'qrcodes');
+if (!fs.existsSync(qrcodesDir)) {
+  fs.mkdirSync(qrcodesDir);
+}
 
 async function main() {
   await mongoose.connect(process.env.MONGO_URI)
@@ -15,7 +23,7 @@ async function main() {
     .catch(err => { console.error('MongoDB connection error:', err); process.exit(1); });
 
   const results = [];
-  let entries = []; // For optional export
+  let csvRows = ['name,phone,qr_link'];
 
   fs.createReadStream('data.csv')
     .pipe(csv())
@@ -27,7 +35,9 @@ async function main() {
           continue;
         }
         const code = uuidv4().slice(0, 8);
-        const url = `${BASE_URL}${code}`;
+        const qrUrl = `${QR_IMG_BASE_URL}${row.name.replace(/\s+/g, '_')}_${code}.png`;
+        const qrFilename = path.join(qrcodesDir, `${row.name.replace(/\s+/g, '_')}_${code}.png`);
+        const qrContent = `${BASE_URL}${code}`;
         try {
           // Save to MongoDB
           await Entry.create({
@@ -36,22 +46,22 @@ async function main() {
             code,
             scanned: false
           });
-          // Also create QR code PNG if desired
-          const filename = `${row.name.replace(/\s+/g, '_')}_${code}.png`;
+          // Generate QR code PNG
           await QRCode.toFile(
-            path.join('qrcodes', filename),
-            url
+            qrFilename,
+            qrContent
           );
-          entries.push({ name: row.name, phone: row.phone, code, url });
-          console.log(`Created: ${row.name} | Code: ${code} | URL: ${url}`);
+          csvRows.push(`${row.name},${row.phone},${qrUrl}`);
+          console.log(`Created: ${row.name} | Code: ${code} | URL: ${qrContent}`);
         } catch (err) {
           console.error(`Error creating entry for ${row.name}: ${err}`);
         }
       }
       mongoose.disconnect();
-      // Optionally, write a csv or json file with all links for you to check
-      fs.writeFileSync('all_qr_links.txt', entries.map(e => `${e.name},${e.phone},${e.code},${e.url}`).join('\n'));
-      console.log('All entries processed and saved to MongoDB.');
+      // Write all links to qr_links.csv
+      fs.writeFileSync('qr_links.csv', csvRows.join('\n'));
+      console.log('\nAll entries processed, QR codes generated, and saved to MongoDB.');
+      console.log('See qr_links.csv for all links.');
     });
 }
 
