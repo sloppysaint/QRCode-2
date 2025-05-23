@@ -1,3 +1,6 @@
+const path = require('path');
+app.use('/qr', express.static(path.join(__dirname, 'qrcodes')));
+
 require('dotenv').config();
 const express = require('express');
 const mongoose = require('mongoose');
