@@ -51,7 +51,8 @@ async function main() {
             qrFilename,
             qrContent
           );
-          csvRows.push(`${row.name},${row.phone},${qrUrl}`);
+          // Add HYPERLINK formula for Excel
+          csvRows.push(`${row.name},${row.phone},"=HYPERLINK(""${qrUrl}"",""QR Code"")"`);
           console.log(`Created: ${row.name} | Code: ${code} | URL: ${qrContent}`);
         } catch (err) {
           console.error(`Error creating entry for ${row.name}: ${err}`);
@@ -61,7 +62,7 @@ async function main() {
       // Write all links to qr_links.csv
       fs.writeFileSync('qr_links.csv', csvRows.join('\n'));
       console.log('\nAll entries processed, QR codes generated, and saved to MongoDB.');
-      console.log('See qr_links.csv for all links.');
+      console.log('See qr_links.csv for all clickable links.');
     });
 }
 
