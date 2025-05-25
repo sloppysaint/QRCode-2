@@ -51,8 +51,8 @@ async function main() {
             qrFilename,
             qrContent
           );
-          // Add HYPERLINK formula for Excel
-          csvRows.push(`${row.name},${row.phone},"=HYPERLINK(""${qrUrl}"",""QR Code"")"`);
+          // Just plain clickable link
+          csvRows.push(`${row.name},${row.phone},${qrUrl}`);
           console.log(`Created: ${row.name} | Code: ${code} | URL: ${qrContent}`);
         } catch (err) {
           console.error(`Error creating entry for ${row.name}: ${err}`);
