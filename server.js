@@ -36,7 +36,7 @@ app.get('/view/:code', async (req, res) => {
           <body style="font-size:2rem;text-align:center;padding-top:40px;">
             This QR code has already been used.
             <br>
-            First scanned at: ${entry.scannedAt ? new Date(entry.scannedAt).toLocaleString() : 'N/A'}
+            First scanned at: ${entry.scannedAt ? new Date(entry.scannedAt).toLocaleString('en-IN', { timeZone: 'Asia/Kolkata' }) : 'N/A'}
           </body>
         </html>
       `);
@@ -49,7 +49,9 @@ app.get('/view/:code', async (req, res) => {
           <body style="font-size:2.2rem;line-height:1.5;text-align:center;padding-top:40px;">
             <h2 style="font-size:2.5rem;margin-bottom:20px;">Name: ${entry.name}</h2>
             <h3 style="font-size:2rem;margin-top:0;">Phone: ${entry.phone}</h3>
-            <h4 style="font-size:1.5rem;margin-top:10px;">Scanned at: ${new Date(entry.scannedAt).toLocaleString()}</h4>
+            <h4 style="font-size:1.5rem;margin-top:10px;">
+              Scanned at: ${new Date(entry.scannedAt).toLocaleString('en-IN', { timeZone: 'Asia/Kolkata' })}
+            </h4>
           </body>
         </html>
       `);
