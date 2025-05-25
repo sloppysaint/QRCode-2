@@ -25,33 +25,37 @@ app.get('/view/:code', async (req, res) => {
     if (!entry) {
       res.send(`
         <html>
-          <body style="font-size:2rem;text-align:center;padding-top:40px;">
-            Invalid QR code.
+          <body style="display:flex;justify-content:center;align-items:center;min-height:100vh;margin:0;">
+            <div style="font-size:2.5rem;text-align:center;">
+              Invalid QR code.
+            </div>
           </body>
         </html>
       `);
     } else if (entry.scanned) {
       res.send(`
         <html>
-          <body style="font-size:2rem;text-align:center;padding-top:40px;">
-            This QR code has already been used.
-            <br>
-            First scanned at: ${entry.scannedAt ? new Date(entry.scannedAt).toLocaleString('en-IN', { timeZone: 'Asia/Kolkata' }) : 'N/A'}
+          <body style="display:flex;justify-content:center;align-items:center;min-height:100vh;margin:0;">
+            <div style="font-size:2.5rem;text-align:center;">
+              This QR code has already been used.<br>
+              <span style="font-size:2rem;">First scanned at: ${entry.scannedAtIST || 'N/A'}</span>
+            </div>
           </body>
         </html>
       `);
     } else {
       entry.scanned = true;
-      entry.scannedAt = new Date(); // Save the scan time
+      entry.scannedAt = new Date();
+      entry.scannedAtIST = new Date().toLocaleString('en-IN', { timeZone: 'Asia/Kolkata' });
       await entry.save();
       res.send(`
         <html>
-          <body style="font-size:2.2rem;line-height:1.5;text-align:center;padding-top:40px;">
-            <h2 style="font-size:2.5rem;margin-bottom:20px;">Name: ${entry.name}</h2>
-            <h3 style="font-size:2rem;margin-top:0;">Phone: ${entry.phone}</h3>
-            <h4 style="font-size:1.5rem;margin-top:10px;">
-              Scanned at: ${new Date(entry.scannedAt).toLocaleString('en-IN', { timeZone: 'Asia/Kolkata' })}
-            </h4>
+          <body style="display:flex;justify-content:center;align-items:center;min-height:100vh;margin:0;">
+            <div style="font-size:2.5rem;line-height:1.4;text-align:center;">
+              <h2 style="font-size:3rem;margin-bottom:20px;">Name: ${entry.name}</h2>
+              <h3 style="font-size:2.5rem;margin-top:0;">Phone: ${entry.phone}</h3>
+              <h4 style="font-size:2rem;margin-top:10px;">Scanned at: ${entry.scannedAtIST}</h4>
+            </div>
           </body>
         </html>
       `);
@@ -59,12 +63,15 @@ app.get('/view/:code', async (req, res) => {
   } catch (err) {
     res.status(500).send(`
       <html>
-        <body style="font-size:2rem;text-align:center;padding-top:40px;">
-          Server error.
+        <body style="display:flex;justify-content:center;align-items:center;min-height:100vh;margin:0;">
+          <div style="font-size:2.5rem;text-align:center;">
+            Server error.
+          </div>
         </body>
       </html>
     `);
   }
 });
+
 
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
