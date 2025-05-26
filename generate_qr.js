@@ -8,7 +8,7 @@ const path = require('path');
 const Entry = require('./models/entry');
 
 // For QR code image links, use /qr/ not /view/
-const QR_IMG_BASE_URL = 'https://qrcode-2-6usy.onrender.com/qr/';
+const QR_IMG_BASE_URL = 'https://qrcode-2-production.up.railway.app/qr/';
 const BASE_URL = process.env.BASE_URL || 'http://localhost:3000/view/';
 
 // Ensure qrcodes directory exists
